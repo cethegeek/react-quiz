@@ -1,0 +1,19 @@
+/* TODO: Comments will help parse the file into individual component files later */
+/* Belonging to the Quiz component */
+
+.quiz {
+    background-color: bisque;
+}
+
+/* Belonging to the QuestionPanel component */
+
+.questionPanel {
+    background-color: mediumseagreen;
+    padding: 5px;
+}
+
+.answerPanel {
+    background-color: darkseagreen;
+}
+
+/* Belonging to the AnswerOption component */
