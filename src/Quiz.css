@@ -17,3 +17,9 @@
 }
 
 /* Belonging to the AnswerOption component */
+
+.answerOption {
+    background-color: beige;
+    padding: 3px;
+    margin: 2px;
+}
