@@ -1,85 +1,11 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
+import { Typography, Paper, Divider, Button } from "@material-ui/core";
+import Question from "./Question.js";
 import "./Quiz.css";
 
-// TODO: This could use some further componentization to different files.
-
-function QuestionPanel(props) {
-  const rows = [];
-  props.choices.forEach(choice => {
-    const key = `${props.id}_${choice.choiceId}`
-    rows.push(
-      <AnswerOption 
-        key={key}
-        questionId={props.id}
-        choiceId={choice.choiceId}
-        //optionStatus: PropTypes.string,
-        //answer: PropTypes.string,
-        body={choice.body}
-        answers={props.answers}
-        setAnswers={props.setAnswers} />
-    );
-  });
-
-  return (
-    <div className="questionPanel" id={"questionPanel" + props.id}>
-      <h2 className="questionHeader">
-        {props.questionNumber}) {props.body}
-      </h2>
-      <ol type="a" className="answerPanel" id={"answerPanel" + props.id}>
-        {rows}
-      </ol>
-    </div>
-  );
-}
-
-QuestionPanel.propTypes = {
-  id: PropTypes.number.isRequired,
-  questionNumber: PropTypes.number.isRequired,
-  body: PropTypes.string.isRequired,
-  choices: PropTypes.array.isRequired
-};
-
-function AnswerOption(props) {
-  const answerValue = `${props.questionId}_${props.choiceId}`
-  const choiceId = `choice${props.choiceId}`
-
-  function handleChangeAnswer(e) {
-    const [question_id, choice_id] = e.target.value.split('_');
-    const newState = new Map(props.answers);
-    newState.set(question_id, choice_id);
-    props.setAnswers(newState);
-  }
-
-  return (
-    <li className="answerOption">
-      <input
-        className="answerOption"
-        type="radio"
-        name={"rg_" + props.questionId}
-        //checked=""
-        id={choiceId}
-        value={answerValue}
-        //disabled={props.optionStatus}
-        onChange={handleChangeAnswer}
-      />
-      <label className="answerOptionLabel" htmlFor={choiceId}>
-        {props.body}
-      </label>
-    </li>
-  );
-}
-
-AnswerOption.propTypes = {
-  questionId: PropTypes.number.isRequired,
-  choiceId: PropTypes.number.isRequired,
-  optionStatus: PropTypes.string,
-  answer: PropTypes.string,
-  body: PropTypes.string.isRequired
-};
-
 export default function Quiz(props) {
-  const heading = `We have ${props.numberOfQuestions} question${props.numberOfQuestions > 1 ? "s" : ""} for you:`;
+  const heading = `Test your knowledge:`;
   const rows = [];
   let questionCounter = 1;
 
@@ -88,18 +14,26 @@ export default function Quiz(props) {
   props.answerKey.forEach(ak => {
     answerKey.set(String(ak.questionId), String(ak.choiceId));
   });
+
   function handleSubmitClick(e) {
-    //TODO: Compare current state with the answer key and celebrate if all match
+    const newState = new Map(answers);
     for (var key of answers.keys()) {
-      score += answerKey.get(key) === answers.get(key) ? 1 : 0;
+      var answerState = answers.get(key);
+      if (answerKey.get(key) === answerState[0]) {
+        score += 1;
+        newState.set(key, [answerState[0], true]);
+      } else {
+        newState.set(key, [answerState[0], false]);
+      }
+      setAnswers(newState);
     }
-    alert(`You have a ${(score/questionCounter)*100}% accuracy rate!`);
+    alert(`You have a ${(score / questionCounter) * 100}% accuracy rate!`);
   }
 
   const [answers, setAnswers] = useState(new Map());
   props.questions.forEach(question => {
     rows.push(
-      <QuestionPanel
+      <Question
         key={question.questionId}
         id={question.questionId}
         questionNumber={questionCounter++}
@@ -113,17 +47,24 @@ export default function Quiz(props) {
   questionCounter--;
 
   return (
-    <div className="quiz" id={props.id}>
-      <h1 id="quizHeading">{heading}</h1>
+    <Paper className="quiz" id={props.id} elevation={0}>
+      <Typography id="quizHeading" variant="h3" gutterBottom>
+        {heading}
+      </Typography>
+      <Divider />
+      <br />
       {rows}
-      <button 
-        id="submitButton" 
+      <Button
+        variant="contained"
+        color="primary"
+        className="submitButton"
+        id="submitButton"
         type="button"
         disabled={!(answers.size === questionCounter)}
         onClick={handleSubmitClick}>
-          Submit
-      </button>
-    </div>
+        Submit
+      </Button>
+    </Paper>
   );
 }
 

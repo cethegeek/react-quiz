@@ -2,18 +2,9 @@
 /* Belonging to the Quiz component */
 
 .quiz {
-    background-color: bisque;
+    margin: 10px;
 }
 
-/* Belonging to the QuestionPanel component */
-
-.questionPanel {
-    background-color: mediumseagreen;
-    padding: 5px;
+.submitButton {
+    margin-left: 5px !important;
 }
-
-.answerPanel {
-    background-color: darkseagreen;
-}
-
-/* Belonging to the AnswerOption component */
