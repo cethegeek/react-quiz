@@ -12,13 +12,14 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 * ./public/index.html - edited meta content.
 * ./public/manifest.json - edited short name and name.
-* ./src/App.js - imported Quiz.js that contains my components and render my component.
+* ./src/App.js - imported Quiz.js that contains my components.
 * ./src/App.css - edited a bit of the CSS to suit my taste.
-
 
 ## I created:
 
 * ./src/Quiz.js and ./src/Quiz.css
+* ./src/Question.js
+* ./src/AnswerChoice.js
 
 ## Available Scripts
 

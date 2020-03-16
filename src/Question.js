@@ -71,7 +71,7 @@ export default function Question(props) {
           <RadioGroup>{rows}</RadioGroup>
         </CardContent>
       </CardActionArea>
-      <CardActions>
+{/* {      <CardActions>
         <Box display="">
           <Typography
             id={"questionPanelError" + props.id}
@@ -88,7 +88,7 @@ export default function Question(props) {
             Your answer is correct!
           </Typography>
         </Box>
-      </CardActions>
+      </CardActions> } */}
     </Card>
   );
 }
