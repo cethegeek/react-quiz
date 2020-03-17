@@ -4,6 +4,11 @@ A simple application built in React with Hooks to take a multiple choice quiz.
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+## Upon git clone:
+
+* `npm install` - will install all dependencies
+* `npm start` - will start the application on http://localhost:3000/
+
 ## I created this project with the following command:
 
 ### `npx create-react-app quiz`

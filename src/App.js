@@ -3,7 +3,6 @@ import Quiz from './Quiz.js'
 import CssBaseline from '@material-ui/core/CssBaseline';
 import muiTheme from './muiTheme.js';
 import { ThemeProvider } from '@material-ui/core/styles';
-import './App.css';
 
 // Here is an example of what the API would return when requesting a Quiz from the server:
 const response = {

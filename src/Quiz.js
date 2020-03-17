@@ -1,10 +1,17 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
-import { Typography, Paper, Divider, Button } from "@material-ui/core";
+import { makeStyles, Typography, Paper, Divider, Button } from "@material-ui/core";
 import Question from "./Question.js";
-import "./Quiz.css";
+
+const useStyles = makeStyles(theme => ({
+  submitButton: {
+    margin: "5px"
+  },
+}));
 
 export default function Quiz(props) {
+  const classes = useStyles();
+
   const heading = `Test your knowledge:`;
   const rows = [];
   let questionCounter = 1;
@@ -57,7 +64,7 @@ export default function Quiz(props) {
       <Button
         variant="contained"
         color="primary"
-        className="submitButton"
+        className={classes.submitButton}
         id="submitButton"
         type="button"
         disabled={!(answers.size === questionCounter)}
