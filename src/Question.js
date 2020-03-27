@@ -3,17 +3,15 @@ import PropTypes from "prop-types";
 import AnswerChoice from "./AnswerChoice.js";
 import {
   makeStyles,
-  Typography,
-  Box,
   Card,
   CardHeader,
   CardActionArea,
   CardContent,
-  CardActions,
   Avatar,
   RadioGroup,
   Divider
 } from "@material-ui/core";
+//import Alert from '@material-ui/lab/Alert';
 
 const useStyles = makeStyles(theme => ({
   bcaGreen: {
@@ -27,9 +25,16 @@ const useStyles = makeStyles(theme => ({
     marginBottom: "10px",
     marginLeft: "5px",
     marginRight: "5px"
+  },
+  wide: {
+    width: '100%',
   }
 }));
 
+/**
+ * This renders a Question in a Quiz using Material-UI components
+ * @param {PropTypes} props 
+ */
 export default function Question(props) {
   const classes = useStyles();
 
@@ -45,6 +50,7 @@ export default function Question(props) {
         body={choice.body}
         answers={props.answers}
         setAnswers={props.setAnswers}
+        answerKey={props.answerKey}
       />
     );
     if (idx !== array.length - 1) {
@@ -71,24 +77,9 @@ export default function Question(props) {
           <RadioGroup>{rows}</RadioGroup>
         </CardContent>
       </CardActionArea>
-{/* {      <CardActions>
-        <Box display="">
-          <Typography
-            id={"questionPanelError" + props.id}
-            variant="caption"
-            color="error">
-            Your answer is incorrect!
-          </Typography>
-        </Box>
-        <Box display={props.answers.get(props.id) ? "" : "none"}>
-          <Typography
-            id={"questionPanelError" + props.id}
-            variant="caption"
-            color="primary">
-            Your answer is correct!
-          </Typography>
-        </Box>
-      </CardActions> } */}
+      <div id={"results" + props.id} style={{display: props.answers.get(props.id) ? 'block' : 'none' }}>
+        asd
+      </div> 
     </Card>
   );
 }
@@ -97,5 +88,8 @@ Question.propTypes = {
   id: PropTypes.number.isRequired,
   questionNumber: PropTypes.number.isRequired,
   body: PropTypes.string.isRequired,
-  choices: PropTypes.array.isRequired
+  choices: PropTypes.array.isRequired,
+  answers: PropTypes.instanceOf(Map).isRequired,
+  setAnswers: PropTypes.func.isRequired,
+  answerKey: PropTypes.object.isRequired,
 };
