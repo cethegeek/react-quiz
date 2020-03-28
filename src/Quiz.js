@@ -26,6 +26,7 @@ export default function Quiz(props) {
     let correct = 0;
     const newState = answerState.map(state => {
       const answer = props.answerKey.filter(ak => ak.questionId === state.questionId);
+      state.answerCorrect = false;
       if (state.answerChoiceId === answer[0].choiceId) {
         state.answerCorrect = true;
         correct++;
