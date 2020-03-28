@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
-import { makeStyles, Typography, Paper, Divider, Button } from "@material-ui/core";
+import { makeStyles, Typography, Paper, Divider, Button, Collapse } from "@material-ui/core";
 import Question from "./Question.js";
+import { Alert, AlertTitle } from '@material-ui/lab';
 
 const useStyles = makeStyles(theme => ({
   submitButton: {
@@ -16,51 +17,40 @@ const useStyles = makeStyles(theme => ({
 export default function Quiz(props) {
   const classes = useStyles();
 
-  const answerKey = new Map();
-  let score = 0;
-  props.answerKey.forEach(ak => {
-    answerKey.set(String(ak.questionId), String(ak.choiceId));
-  });
-
   /**
    * Handles the submission of the entire quiz
    * @param {HTMLElement} e - the submit button for the quiz, not relevant in this context
    */
   function handleSubmitClick(e) {
-    const newState = new Map(answers);
-
     // Marks every question as correct or incorrect
-
-    // Computes the new state
-    // for (var key of answers.keys()) {
-    //   var answerState = answers.get(key);
-    //   if (answerState !== undefined) {
-    //     if (answerKey.get(key) === answerState[0]) {
-    //       score += 1;
-    //     }
-    //     newState.set(key, [answerState[0], (answerKey.get(key) === answerState[0])]);
-
-    //     setAnswers(newState);
-    //   }
-    // }
-
-    // Display the results
-
-    console.log(newState);
-    alert(`You have a ${(score / questionCounter) * 100}% accuracy rate!`);
+    let correct = 0;
+    const newState = answerState.map(state => {
+      const answer = props.answerKey.filter(ak => ak.questionId === state.questionId);
+      if (state.answerChoiceId === answer[0].choiceId) {
+        state.answerCorrect = true;
+        correct++;
+      }
+      return state;
+    });
+    setAnswerState(newState);
+    setScore((correct/newState.length)*100);
+    setSubmitted(true);
   }
 
   // Define the initial state based on the questions/choices
   // State is a map where:
   // key = questionId
   // value = [answerChoiceId, boolean defining if the answerChoiceId matches the correct answer in the answerKey]
-  const initialState = new Map();
+  const initialState = [];
   props.questions.forEach(question => {
-    initialState.set(question.questionId, [null, false]);
+    initialState.push({ questionId: question.questionId, answerChoiceId: null, answerCorrect: false });
   });
 
   // This defines the state of the application
-  const [answers, setAnswers] = useState(new Map(initialState));
+  const [isSubmitEnabled, toggleSubmit] = useState(false);
+  const [answerState, setAnswerState] = useState(initialState);
+  const [submitted, setSubmitted] = useState(false);
+  const [score, setScore] = useState(0);
 
   const rows = [];
   let questionCounter = 1;
@@ -72,17 +62,13 @@ export default function Quiz(props) {
         questionNumber={questionCounter++}
         body={question.body}
         choices={question.choices}
-        answers={answers}
-        setAnswers={setAnswers}
-        answerKey={answerKey}
+        answerState={answerState}
+        onChoiceSelected={setAnswerState}
+        toggleSubmit={toggleSubmit}
+        submitted={submitted}
       />
     );
   });
-  questionCounter--;
-
-  console.log(answers.size);
-  console.log(questionCounter);
-  console.log(answers);
 
   return (
     <Paper className="quiz" id={props.id} elevation={0}>
@@ -91,6 +77,13 @@ export default function Quiz(props) {
       </Typography>
       <Divider />
       <br />
+      <Collapse in={submitted}>
+        <Alert display="none" severity="info">
+          <AlertTitle>Completed!</AlertTitle>
+          You scored {score}% correctly.
+        </Alert>
+        <br />
+      </Collapse>
       {rows}
       <Button
         variant="contained"
@@ -98,7 +91,7 @@ export default function Quiz(props) {
         className={classes.submitButton}
         id="submitButton"
         type="button"
-        disabled={!(answers.size === questionCounter)}
+        disabled={!isSubmitEnabled}
         onClick={handleSubmitClick}>
         Submit
       </Button>

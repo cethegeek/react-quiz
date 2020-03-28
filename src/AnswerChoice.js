@@ -7,19 +7,26 @@ import { FormControlLabel, Radio } from "@material-ui/core";
  * @param {PropTypes} props 
  */
 export default function AnswerChoice(props) {
-  const answerValue = `${props.questionId}_${props.choiceId}`;
+  const answerValue = `${props.questionId}_${props.id}`;
   const choiceId = `choice${props.choiceId}`;
 
   /**
-   * Handler for the selection of an answer that updates the state
+   * Handler for the selection of an answer that updates the state of the quiz
    * @param {HTMLElement} e - the radio button selected, used to determine the answer id
    */
   function handleChangeAnswer(e) {
-    const [question_id, choice_id] = e.target.value.split("_");
-    const newState = new Map(props.answers);
-    newState.set(question_id, [choice_id, (props.answerKey.get(question_id) === choice_id)]);
-    // TODO: Look at the answer key and define the correctness state
-    props.setAnswers(newState);
+    const [questionId, choiceId] = e.target.value.split("_");
+    const newState = props.answerState.map(state => {
+      if (state.questionId === parseInt(questionId)) {
+        state.answerChoiceId = parseInt(choiceId);
+      }
+      return state;
+    });
+
+    const unAnswered = newState.filter(state => state.answerChoiceId === null);
+    
+    props.onChoiceSelected(newState);
+    props.toggleSubmit(unAnswered.length === 0);
   }
 
   return (
@@ -40,9 +47,9 @@ export default function AnswerChoice(props) {
 
 AnswerChoice.propTypes = {
   questionId: PropTypes.number.isRequired,
-  choiceId: PropTypes.number.isRequired,
-  optionStatus: PropTypes.string,
+  id: PropTypes.number.isRequired,
   body: PropTypes.string.isRequired,
-  answers: PropTypes.instanceOf(Map).isRequired,
-  setAnswers: PropTypes.func.isRequired,
+  answerState: PropTypes.array.isRequired, // TODO: Make this a bit more specific about being an array of objects and what keys are required
+  onChoiceSelected: PropTypes.func.isRequired,
+  toggleSubmit: PropTypes.func.isRequired,
 };

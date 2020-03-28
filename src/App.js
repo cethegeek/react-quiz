@@ -8,7 +8,6 @@ import { ThemeProvider } from '@material-ui/core/styles';
 const response = {
   'quizId': 1,
   'quizModule': 'Fruits and the UK!',
-  'numberOfQuestions': 2,
   'questions': [
     { 
       'questionId': 1,
@@ -69,7 +68,6 @@ function App() {
       <React.Fragment>
         <CssBaseline />
         <Quiz id={response.quizId}
-          numberOfQuestions={response.numberOfQuestions} 
           questions={response.questions}
           answerKey={response.answerKey} />
       </React.Fragment>

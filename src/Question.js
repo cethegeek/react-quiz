@@ -9,9 +9,10 @@ import {
   CardContent,
   Avatar,
   RadioGroup,
-  Divider
+  Divider,
+  Collapse
 } from "@material-ui/core";
-//import Alert from '@material-ui/lab/Alert';
+import Alert from '@material-ui/lab/Alert';
 
 const useStyles = makeStyles(theme => ({
   bcaGreen: {
@@ -45,12 +46,11 @@ export default function Question(props) {
       <AnswerChoice
         key={key}
         questionId={props.id}
-        choiceId={choice.choiceId}
-        index={idx + 1}
+        id={choice.choiceId}
         body={choice.body}
-        answers={props.answers}
-        setAnswers={props.setAnswers}
-        answerKey={props.answerKey}
+        answerState={props.answerState}
+        onChoiceSelected={props.onChoiceSelected}
+        toggleSubmit={props.toggleSubmit}
       />
     );
     if (idx !== array.length - 1) {
@@ -74,11 +74,17 @@ export default function Question(props) {
       />
       <CardActionArea>
         <CardContent>
-          <RadioGroup>{rows}</RadioGroup>
+          <RadioGroup>
+            {rows}
+          </RadioGroup>
         </CardContent>
       </CardActionArea>
-      <div id={"results" + props.id} style={{display: props.answers.get(props.id) ? 'block' : 'none' }}>
-        asd
+      <div id={"results" + props.id}>
+        <Collapse in={props.submitted}>
+          <Alert display="none" severity={props.answerState[props.questionNumber-1].answerCorrect ? "success" : "error"}>
+            Your answer is {props.answerState[props.questionNumber-1].answerCorrect ? "correct" : "wrong"}.
+          </Alert>
+        </Collapse>
       </div> 
     </Card>
   );
@@ -89,7 +95,8 @@ Question.propTypes = {
   questionNumber: PropTypes.number.isRequired,
   body: PropTypes.string.isRequired,
   choices: PropTypes.array.isRequired,
-  answers: PropTypes.instanceOf(Map).isRequired,
-  setAnswers: PropTypes.func.isRequired,
-  answerKey: PropTypes.object.isRequired,
+  answerState: PropTypes.array.isRequired, // TODO: Make this a bit more specific about being an array of objects and what keys are required
+  onChoiceSelected: PropTypes.func.isRequired,
+  toggleSubmit: PropTypes.func.isRequired,
+  submitted: PropTypes.bool.isRequired,
 };
