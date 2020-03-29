@@ -53,10 +53,10 @@ export default function Quiz(props) {
   const [submitted, setSubmitted] = useState(false);
   const [score, setScore] = useState(0);
 
-  const rows = [];
+  const questionRows = [];
   let questionCounter = 1;
   props.questions.forEach(question => {  
-    rows.push(
+    questionRows.push(
       <Question
         key={question.questionId}
         id={question.questionId}
@@ -85,7 +85,7 @@ export default function Quiz(props) {
         </Alert>
         <br />
       </Collapse>
-      {rows}
+      {questionRows}
       <Button
         variant="contained"
         color="primary"

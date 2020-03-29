@@ -4,6 +4,10 @@ A simple application built in React with Hooks to take a multiple choice quiz.
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+To be able to run tests, I also had to install watchman, which is a non-node dependency for Jest. On Mac OS I did:
+
+`brew install watchman`
+
 ## Upon git clone:
 
 * `npm install` - will install all dependencies

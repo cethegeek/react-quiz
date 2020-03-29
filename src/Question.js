@@ -39,10 +39,10 @@ const useStyles = makeStyles(theme => ({
 export default function Question(props) {
   const classes = useStyles();
 
-  const rows = [];
+  const choiceRows = [];
   props.choices.forEach((choice, idx, array) => {
     const key = `${props.id}_${choice.choiceId}`;
-    rows.push(
+    choiceRows.push(
       <AnswerChoice
         key={key}
         questionId={props.id}
@@ -54,7 +54,7 @@ export default function Question(props) {
       />
     );
     if (idx !== array.length - 1) {
-      rows.push(<Divider key={"div"+key} light />);
+      choiceRows.push(<Divider key={"div"+key} light />);
     }
   });
 
@@ -75,17 +75,15 @@ export default function Question(props) {
       <CardActionArea>
         <CardContent>
           <RadioGroup>
-            {rows}
+            {choiceRows}
           </RadioGroup>
         </CardContent>
       </CardActionArea>
-      <div id={"results" + props.id}>
-        <Collapse in={props.submitted}>
-          <Alert display="none" severity={props.answerState[props.questionNumber-1].answerCorrect ? "success" : "error"}>
-            Your answer is {props.answerState[props.questionNumber-1].answerCorrect ? "correct" : "wrong"}.
-          </Alert>
-        </Collapse>
-      </div> 
+      <Collapse in={props.submitted}>
+        <Alert display="none" severity={props.answerState[props.questionNumber-1].answerCorrect ? "success" : "error"}>
+          Your answer is {props.answerState[props.questionNumber-1].answerCorrect ? "correct" : "wrong"}.
+        </Alert>
+      </Collapse>
     </Card>
   );
 }
