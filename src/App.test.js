@@ -2,10 +2,11 @@ import React from 'react';
 import { render, queryByAttribute } from '@testing-library/react';
 import App from './App';
 
-test('Renders quiz title', () => {
-  const { getByText } = render(<App />);
-  const linkElement = getByText(/test your knowledge/i);
-  expect(linkElement).toBeInTheDocument();
+test('Renders quiz heading', () => {
+  const dom = render(<App />);
+  const getById = queryByAttribute.bind(null, 'id');
+  const element = getById(dom.container, 'quizHeading');
+  expect(element).toBeInTheDocument();
 });
 
 test('Renders the submit button initially disabled', () => {
@@ -16,9 +17,9 @@ test('Renders the submit button initially disabled', () => {
 
 test('Renders all the questions in the quiz', () => {
   const dom = render(<App />);
-  const getById = queryByAttribute.bind(null, 'id');
-  const element = getById(dom.container, 'quizHeading')
-  expect(element).toBeInTheDocument();
+  const questionPanels = dom.getAllByTestId('questionPanel')
+  console.log(questionPanels.length);
+  expect(questionPanels.length).toBe(2);
 });
 
 test('Renders enabled submit button when all questions have selected answers', () => {

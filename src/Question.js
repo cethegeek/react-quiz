@@ -60,6 +60,7 @@ export default function Question(props) {
 
   return (
     <Card
+      data-testid="questionPanel"
       className={classes.questionPanel}
       id={"questionPanel" + props.id}
       elevation={4}>
