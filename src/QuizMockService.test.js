@@ -78,15 +78,15 @@ test('Get all quizzes and they have ids', async () => {
   const modules = [ 
     'Fruits and the UK!',
     'Supernatural fun facts!',
-     
+    'Marvels of the superhero universe!',
+    'Spacious anecdotes about space!'
   ];
+  modules.forEach(async (m) => {
+    example.quizModule = m;
+    await quizSvc.addQuiz(JSON.stringify(example));
+  });
+
   let jsonString;
-  example.quizModule = 'Fruits and the UK!'
-  jsonString = await quizSvc.addQuiz(JSON.stringify(example));
-  example.quizModule = 'Supernatural fun facts!'
-  jsonString = await quizSvc.addQuiz(JSON.stringify(example));
-  jsonString = await quizSvc.addQuiz(JSON.stringify({ 'quizModule': 'Marvels of the superhero universe!' }));
-  jsonString = await quizSvc.addQuiz(JSON.stringify({ 'quizModule': 'Spacious anecdotes about space!' }));
   jsonString = await quizSvc.getQuizList();
   const listOfQuizzes = JSON.parse(jsonString);
   expect(listOfQuizzes.length).toBe(4);
@@ -99,31 +99,48 @@ test('Get all quizzes and they have ids', async () => {
 
 test('Add multiple quizzes simultaneously', async () => {
   const quizSvc = new QuizMockService();
+  const modules = [ 
+    'Fruits and the UK!',
+    'Supernatural fun facts!',
+    'Marvels of the superhero universe!',
+    'Spacious anecdotes about space!'
+  ];
+  let examples = [];
+  modules.forEach(m => {
+    let newExample = {...example};
+    newExample.quizModule = m;
+    examples.push(newExample);
+  });
+
   let jsonString;
-  jsonString = await quizSvc.addManyQuizzes(JSON.stringify(
-    [
-      { 'quizModule': 'Fruits and the UK!' },
-      { 'quizModule': 'Supernatural fun facts!' },
-      { 'quizModule': 'Marvels of the superhero universe!' },
-      { 'quizModule': 'Spacious anecdotes about space!' }
-    ]
-  ));
+  await quizSvc.addManyQuizzes(JSON.stringify(examples));
   jsonString = await quizSvc.getQuizList();
   const listOfQuizzes = JSON.parse(jsonString);
   expect(listOfQuizzes.length).toBe(4);
+  listOfQuizzes.forEach((element, index) => {
+    expect(element.quizId).toBe(index+1);
+  });
+  expect(listOfQuizzes[1].quizId).toBe(2);
+  expect(listOfQuizzes[1].quizModule).toEqual('Supernatural fun facts!');
 });
 
 test('Get one quiz by id', async () => {
   const quizSvc = new QuizMockService();
+  const modules = [ 
+    'Fruits and the UK!',
+    'Supernatural fun facts!',
+    'Marvels of the superhero universe!',
+    'Spacious anecdotes about space!'
+  ];
+  let examples = [];
+  modules.forEach(m => {
+    let newExample = {...example};
+    newExample.quizModule = m;
+    examples.push(newExample);
+  });
+
   let jsonString;
-  jsonString = await quizSvc.addManyQuizzes(JSON.stringify(
-    [
-      { 'quizModule': 'Fruits and the UK!' },
-      { 'quizModule': 'Supernatural fun facts!' },
-      { 'quizModule': 'Marvels of the superhero universe!' },
-      { 'quizModule': 'Spacious anecdotes about space!' }
-    ]
-  ));
+  await quizSvc.addManyQuizzes(JSON.stringify(examples));
   jsonString = await quizSvc.getQuizList();
   const listOfQuizzes = JSON.parse(jsonString);
   expect(listOfQuizzes.length).toBe(4);
@@ -131,4 +148,38 @@ test('Get one quiz by id', async () => {
   const theQuiz = JSON.parse(jsonString);
   expect(theQuiz.quizId).toBe(3);
   expect(theQuiz.quizModule).toEqual('Marvels of the superhero universe!');
+});
+
+test('Throws error if new quiz isn\'t in the right format', async() => {
+  const quizSvc = new QuizMockService();
+  let jsonString = await quizSvc.addQuiz('{ "quizModule": "An incomplete quiz" }');
+  const createResult = JSON.parse(jsonString)
+  expect(createResult).toHaveProperty('errorCode');
+  expect(createResult.errorCode).toBe(422);
+
+  jsonString = await quizSvc.getQuizList();
+  const afterAdd = JSON.parse(jsonString);
+  expect(afterAdd.length).toBe(0);
+});
+
+test('Throws error if any new quiz isn\'t in the right format', async() => {
+  const quizSvc = new QuizMockService();
+  const modules = [ 
+    'Fruits and the UK!',
+    'Supernatural fun facts!',
+    'Marvels of the superhero universe!',
+    'Spacious anecdotes about space!'
+  ];
+  let examples = [];
+  modules.forEach(m => {
+    let newExample = { quizModule: m };
+    newExample.quizModule = m;
+    examples.push(newExample);
+  });
+
+  let jsonString;
+  jsonString = await quizSvc.addManyQuizzes(JSON.stringify(examples));
+  const createResult = JSON.parse(jsonString)
+  expect(createResult).toHaveProperty('errorCode');
+  expect(createResult.errorCode).toBe(422);
 });

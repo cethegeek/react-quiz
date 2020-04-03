@@ -1,8 +1,8 @@
 import React from 'react';
-import { render } from '@testing-library/react';
+import { render, queryByAttribute } from '@testing-library/react';
 import App from './App';
 
-test('Renders test your knowledge title', () => {
+test('Renders quiz title', () => {
   const { getByText } = render(<App />);
   const linkElement = getByText(/test your knowledge/i);
   expect(linkElement).toBeInTheDocument();
@@ -14,10 +14,11 @@ test('Renders the submit button initially disabled', () => {
   expect(button.closest('button')).toBeDisabled();
 });
 
-test('Renders two questions', () => {
-  const { getByText } = render(<App />);
-  const linkElement = getByText(/MuiAvatar-circle/i);
-  expect(linkElement).toBeInTheDocument();
+test('Renders all the questions in the quiz', () => {
+  const dom = render(<App />);
+  const getById = queryByAttribute.bind(null, 'id');
+  const element = getById(dom.container, 'quizHeading')
+  expect(element).toBeInTheDocument();
 });
 
 test('Renders enabled submit button when all questions have selected answers', () => {

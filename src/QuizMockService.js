@@ -9,7 +9,7 @@ export default class QuizMockService {
     }
 
     /**
-     * Checks the payload containing a quiz to validate it is well-formed
+     * Checks the payload containing a quiz to validate it is well-formed. Returns boolean.
      * TODO: Replace this slow crap with some library that validates by json schema, like https://github.com/epoberezkin/ajv or https://github.com/korzio/djv
      * @param {string} quiz json payload containing a quiz 
      */
@@ -41,7 +41,7 @@ export default class QuizMockService {
     }
 
     /**
-     * Return quiz list in the data store, basic info only
+     * Return quiz list in the data store.
      */
     async getQuizList(callback) {
       return JSON.stringify(this.quizzes);
@@ -57,7 +57,7 @@ export default class QuizMockService {
     }
 
     /**
-     * Add a quiz to the data store
+     * Add a quiz to the data store. Returns the added element with its id.
      * @param {string} quiz the json payload containing the basic info for a quiz
      */
     async addQuiz(quiz) {
@@ -71,15 +71,19 @@ export default class QuizMockService {
     }
 
     /**
-     * Add multiple quizzes to the data store
+     * Add multiple quizzes to the data store. Returns the added elements with their ids.
      * @param {string} quizList the json payload containing the list of info for quizzes
      */
     async addManyQuizzes(quizList) {
       const newQuizzes = JSON.parse(quizList);
-      newQuizzes.forEach((element, index) => {
+      for (let index = 0; index < newQuizzes.length; index++) {
+        const element = newQuizzes[index];
+        if (! QuizMockService._validateQuizPayload(JSON.stringify(element))) {
+          return JSON.stringify({ errorCode: 422, errorMessage: `Unprocessable Entity at index ${index} of parameter list.` });
+        }
         element.quizId = this.nextId++;
-        this.quizzes.push(element);
-      });
-      return newQuizzes;
+        this.quizzes.push(element);        
+      }
+      return JSON.stringify(newQuizzes);
     }
   }
