@@ -75,9 +75,16 @@ test('Add a new quiz', async () => {
 
 test('Get all quizzes and they have ids', async () => {
   const quizSvc = new QuizMockService();
+  const modules = [ 
+    'Fruits and the UK!',
+    'Supernatural fun facts!',
+     
+  ];
   let jsonString;
-  jsonString = await quizSvc.addQuiz(JSON.stringify({ 'quizModule': 'Fruits and the UK!' }));
-  jsonString = await quizSvc.addQuiz(JSON.stringify({ 'quizModule': 'Supernatural fun facts!' }));
+  example.quizModule = 'Fruits and the UK!'
+  jsonString = await quizSvc.addQuiz(JSON.stringify(example));
+  example.quizModule = 'Supernatural fun facts!'
+  jsonString = await quizSvc.addQuiz(JSON.stringify(example));
   jsonString = await quizSvc.addQuiz(JSON.stringify({ 'quizModule': 'Marvels of the superhero universe!' }));
   jsonString = await quizSvc.addQuiz(JSON.stringify({ 'quizModule': 'Spacious anecdotes about space!' }));
   jsonString = await quizSvc.getQuizList();

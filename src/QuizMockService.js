@@ -15,12 +15,26 @@ export default class QuizMockService {
      */
     static _validateQuizPayload(quiz) {
       const possibleQuiz = JSON.parse(quiz);
-      const validQuiz = possibleQuiz.hasOwnProperty("quizModule") &&
-                        possibleQuiz.hasOwnProperty("questions") &&
-                        possibleQuiz.hasOwnProperty("answerKey");
-      const validQuestions = possibleQuiz.questions.every(question => question.hasOwnProperty("body") &&
-                                                                      question.hasOwnProperty("choices"));
-      const validChoices = possibleQuiz.questions.every(question => question.choices.every(choice => choice.hasOwnProperty("body")));
+      let validQuiz = false, validQuestions = false, validChoices = false;
+
+      validQuiz = possibleQuiz.hasOwnProperty("quizModule") &&
+                  possibleQuiz.hasOwnProperty("questions") &&
+                  possibleQuiz.hasOwnProperty("answerKey");
+
+      if (validQuiz && Array.isArray(possibleQuiz.questions)) {
+        validQuestions = possibleQuiz.questions.every(question => question.hasOwnProperty("body") &&
+                                                                  question.hasOwnProperty("choices"));
+      }
+
+      if (validQuestions) {
+        let innerValidChoices = [];
+        possibleQuiz.questions.forEach(question => {
+          if (Array.isArray(question.choices)) {
+            innerValidChoices.push(question.choices.every(choice => choice.hasOwnProperty("body")));
+          }
+        });
+        validChoices = innerValidChoices.every(valid => valid);
+      }
       //const validAnswerKey = possibleQuiz.answerKey.every(akey => akey.hasOwnProperty("questionId") && akey.hasOwnProperty("choiceId"));
 
       return validQuiz && validQuestions && validChoices; //&& validAnswerKey;
@@ -47,11 +61,13 @@ export default class QuizMockService {
      * @param {string} quiz the json payload containing the basic info for a quiz
      */
     async addQuiz(quiz) {
-      QuizMockService._validateQuizPayload(quiz);
+      if (! QuizMockService._validateQuizPayload(quiz)) {
+        return JSON.stringify({ errorCode: 422, errorMessage: "Unprocessable Entity" })
+      }
       const newQuiz = JSON.parse(quiz);
       newQuiz.quizId = this.nextId++;
       this.quizzes.push(newQuiz);
-      return newQuiz;
+      return JSON.stringify(newQuiz);
     }
 
     /**
