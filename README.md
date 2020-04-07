@@ -22,13 +22,16 @@ To be able to run tests, I also had to install watchman, which is a non-node dep
 * ./public/index.html - edited meta content.
 * ./public/manifest.json - edited short name and name.
 * ./src/App.js - imported Quiz.js that contains my components.
-* ./src/App.css - removed completely. The App doesn't need any styling as Quiz is the component with style.
+* ./src/App.css - REMOVED COMPLETELY. The App doesn't need any styling as Quiz is the component with style.
 
 ## I created:
 
+* ./src/App.test.js
 * ./src/Quiz.js
 * ./src/Question.js
 * ./src/AnswerChoice.js
+* ./src/QuizMockService.js
+* ./src/QuizMockService.test.js
 
 ## Available Scripts
 
