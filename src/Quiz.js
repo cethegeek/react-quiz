@@ -1,135 +1,107 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
-import "./Quiz.css";
+import { makeStyles, Typography, Paper, Divider, Button, Collapse } from "@material-ui/core";
+import Question from "./Question.js";
+import { Alert, AlertTitle } from '@material-ui/lab';
 
-// TODO: This could use some further componentization to different files.
+const useStyles = makeStyles(theme => ({
+  submitButton: {
+    margin: "5px"
+  },
+}));
 
-function QuestionPanel(props) {
-  const rows = [];
-  props.choices.forEach(choice => {
-    const key = `${props.id}_${choice.choiceId}`
-    rows.push(
-      <AnswerOption 
-        key={key}
-        questionId={props.id}
-        choiceId={choice.choiceId}
-        //optionStatus: PropTypes.string,
-        //answer: PropTypes.string,
-        body={choice.body}
-        answers={props.answers}
-        setAnswers={props.setAnswers} />
-    );
-  });
-
-  return (
-    <div className="questionPanel" id={"questionPanel" + props.id}>
-      <h2 className="questionHeader">
-        {props.questionNumber}) {props.body}
-      </h2>
-      <ol type="a" className="answerPanel" id={"answerPanel" + props.id}>
-        {rows}
-      </ol>
-    </div>
-  );
-}
-
-QuestionPanel.propTypes = {
-  id: PropTypes.number.isRequired,
-  questionNumber: PropTypes.number.isRequired,
-  body: PropTypes.string.isRequired,
-  choices: PropTypes.array.isRequired
-};
-
-function AnswerOption(props) {
-  const answerValue = `${props.questionId}_${props.choiceId}`
-  const choiceId = `choice${props.choiceId}`
-
-  function handleChangeAnswer(e) {
-    const [question_id, choice_id] = e.target.value.split('_');
-    const newState = new Map(props.answers);
-    newState.set(question_id, choice_id);
-    props.setAnswers(newState);
-  }
-
-  return (
-    <li className="answerOption">
-      <input
-        className="answerOption"
-        type="radio"
-        name={"rg_" + props.questionId}
-        //checked=""
-        id={choiceId}
-        value={answerValue}
-        //disabled={props.optionStatus}
-        onChange={handleChangeAnswer}
-      />
-      <label className="answerOptionLabel" htmlFor={choiceId}>
-        {props.body}
-      </label>
-    </li>
-  );
-}
-
-AnswerOption.propTypes = {
-  questionId: PropTypes.number.isRequired,
-  choiceId: PropTypes.number.isRequired,
-  optionStatus: PropTypes.string,
-  answer: PropTypes.string,
-  body: PropTypes.string.isRequired
-};
-
+/**
+ * This renders a Quiz using Material-UI components
+ * @param {PropTypes} props 
+ */
 export default function Quiz(props) {
-  const heading = `We have ${props.numberOfQuestions} question${props.numberOfQuestions > 1 ? "s" : ""} for you:`;
-  const rows = [];
-  let questionCounter = 1;
+  const classes = useStyles();
 
-  const answerKey = new Map();
-  let score = 0;
-  props.answerKey.forEach(ak => {
-    answerKey.set(String(ak.questionId), String(ak.choiceId));
-  });
+  /**
+   * Handles the submission of the entire quiz
+   * @param {HTMLElement} e - the submit button for the quiz, not relevant in this context
+   */
   function handleSubmitClick(e) {
-    //TODO: Compare current state with the answer key and celebrate if all match
-    for (var key of answers.keys()) {
-      score += answerKey.get(key) === answers.get(key) ? 1 : 0;
-    }
-    alert(`You have a ${(score/questionCounter)*100}% accuracy rate!`);
+    // Marks every question as correct or incorrect
+    let correct = 0;
+    const newState = answerState.map(state => {
+      const answer = props.answerKey.filter(ak => ak.questionId === state.questionId);
+      state.answerCorrect = false;
+      if (state.answerChoiceId === answer[0].choiceId) {
+        state.answerCorrect = true;
+        correct++;
+      }
+      return state;
+    });
+    setAnswerState(newState);
+    setScore((correct/newState.length)*100);
+    setSubmitted(true);
   }
 
-  const [answers, setAnswers] = useState(new Map());
+  // Define the initial state based on the questions/choices
+  // State is a map where:
+  // key = questionId
+  // value = [answerChoiceId, boolean defining if the answerChoiceId matches the correct answer in the answerKey]
+  const initialState = [];
   props.questions.forEach(question => {
-    rows.push(
-      <QuestionPanel
+    initialState.push({ questionId: question.questionId, answerChoiceId: null, answerCorrect: false });
+  });
+
+  // This defines the state of the application
+  const [isSubmitEnabled, toggleSubmit] = useState(false);
+  const [answerState, setAnswerState] = useState(initialState);
+  const [submitted, setSubmitted] = useState(false);
+  const [score, setScore] = useState(0);
+
+  const questionRows = [];
+  let questionCounter = 1;
+  props.questions.forEach(question => {  
+    questionRows.push(
+      <Question
         key={question.questionId}
         id={question.questionId}
         questionNumber={questionCounter++}
         body={question.body}
         choices={question.choices}
-        answers={answers}
-        setAnswers={setAnswers}
+        answerState={answerState}
+        onChoiceSelected={setAnswerState}
+        toggleSubmit={toggleSubmit}
+        submitted={submitted}
       />
     );
   });
-  questionCounter--;
 
   return (
-    <div className="quiz" id={props.id}>
-      <h1 id="quizHeading">{heading}</h1>
-      {rows}
-      <button 
-        id="submitButton" 
+    <Paper className="quiz" id={props.id} elevation={0}>
+      <Typography id="quizHeading" variant="h3" gutterBottom>
+        Test your knowledge:
+      </Typography>
+      <Divider />
+      <br />
+      <Collapse in={submitted}>
+        <Alert display="none" severity="info">
+          <AlertTitle>Completed!</AlertTitle>
+          You scored {score}% correctly.
+        </Alert>
+        <br />
+      </Collapse>
+      {questionRows}
+      <Button
+        variant="contained"
+        color="primary"
+        className={classes.submitButton}
+        id="submitButton"
         type="button"
-        disabled={!(answers.size === questionCounter)}
+        disabled={!isSubmitEnabled}
         onClick={handleSubmitClick}>
-          Submit
-      </button>
-    </div>
+        Submit
+      </Button>
+    </Paper>
   );
 }
 
 Quiz.propTypes = {
   id: PropTypes.number.isRequired,
-  numberOfQuestions: PropTypes.number.isRequired,
-  questions: PropTypes.array.isRequired,
+  questions: PropTypes.array.isRequired, 
   answerKey: PropTypes.array.isRequired
 };

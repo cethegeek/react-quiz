@@ -4,6 +4,15 @@ A simple application built in React with Hooks to take a multiple choice quiz.
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+To be able to run tests, I also had to install watchman, which is a non-node dependency for Jest. On Mac OS I did:
+
+`brew install watchman`
+
+## Upon git clone:
+
+* `npm install` - will install all dependencies
+* `npm start` - will start the application on http://localhost:3000/
+
 ## I created this project with the following command:
 
 ### `npx create-react-app quiz`
@@ -12,13 +21,14 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 * ./public/index.html - edited meta content.
 * ./public/manifest.json - edited short name and name.
-* ./src/App.js - imported Quiz.js that contains my components and render my component.
-* ./src/App.css - edited a bit of the CSS to suit my taste.
-
+* ./src/App.js - imported Quiz.js that contains my components.
+* ./src/App.css - removed completely. The App doesn't need any styling as Quiz is the component with style.
 
 ## I created:
 
-* ./src/Quiz.js and ./src/Quiz.css
+* ./src/Quiz.js
+* ./src/Question.js
+* ./src/AnswerChoice.js
 
 ## Available Scripts
 

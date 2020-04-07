@@ -1,12 +1,13 @@
 import React from 'react';
 import Quiz from './Quiz.js'
-import './App.css';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import muiTheme from './muiTheme.js';
+import { ThemeProvider } from '@material-ui/core/styles';
 
 // Here is an example of what the API would return when requesting a Quiz from the server:
 const response = {
   'quizId': 1,
   'quizModule': 'Fruits and the UK!',
-  'numberOfQuestions': 2,
   'questions': [
     { 
       'questionId': 1,
@@ -63,12 +64,14 @@ const response = {
 
 function App() {
   return (
-    <div className="App">
-      <Quiz id={response.quizId}
-          numberOfQuestions={response.numberOfQuestions} 
+    <ThemeProvider theme={muiTheme}>
+      <React.Fragment>
+        <CssBaseline />
+        <Quiz id={response.quizId}
           questions={response.questions}
           answerKey={response.answerKey} />
-    </div>
+      </React.Fragment>
+    </ThemeProvider>
   );
 }
 
